@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grade 8 Physics Generator</title>
+    <!-- Font for playful but professional look -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- KaTeX for rendering LaTeX step-by-step solutions -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Nunito', sans-serif; 
+            background-color: #f1f5f9; 
+            margin: 0; 
+            padding: 20px 15px; 
+            color: #334155; 
+        }
+        
+        .container { 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: #ffffff; 
+            padding: 30px; 
+            border-radius: 24px; 
+            border: 4px solid #cbd5e1;
+            box-shadow: 0 10px 0px #cbd5e1; 
+        }
+        
+        h1 { 
+            text-align: center; 
+            color: #ec4899; 
+            font-size: 2.8em; 
+            font-weight: 800;
+            margin-top: 0; 
+            margin-bottom: 25px; 
+            letter-spacing: -1px;
+        }
+        
+        /* TABS */
+        .tabs { 
+            display: flex; 
+            margin-bottom: 30px; 
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 8px;
+            border: 3px solid #e2e8f0;
+        }
+        .tab { 
+            flex: 1; 
+            text-align: center; 
+            padding: 15px 10px; 
+            cursor: pointer; 
+            font-weight: 800; 
+            font-size: 1.2em; 
+            color: #94a3b8; 
+            border-radius: 12px;
+            transition: all 0.2s ease; 
+        }
+        .tab:hover { color: #64748b; }
+        .tab.active { 
+            background: #0ea5e9; 
+            color: #ffffff; 
+            box-shadow: 0 4px 0px #0284c7;
+            transform: translateY(-2px);
+        }
+        
+        .section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* CONTROLS */
+        .control-panel { 
+            background: #f8fafc; 
+            padding: 25px; 
+            border-radius: 16px; 
+            margin-bottom: 25px; 
+            border: 3px solid #e2e8f0; 
+        }
+        .control-panel label.main-label { 
+            font-weight: 800; 
+            font-size: 1.2em; 
+            color: #475569; 
+            display: block; 
+            margin-bottom: 15px; 
+        }
+        
+        .checkbox-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        .checkbox-label { 
+            display: flex; 
+            align-items: center; 
+            background: #ffffff; 
+            padding: 12px 18px; 
+            border: 3px solid #cbd5e1; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            flex: 1 1 calc(50% - 15px); 
+            font-weight: 800; 
+            color: #475569;
+        }
+        .checkbox-label:hover { border-color: #94a3b8; transform: translateY(-2px); }
+        .checkbox-label:has(input:checked) {
+            background-color: #e0f2fe;
+            border-color: #0ea5e9;
+            color: #0284c7;
+        }
+        .checkbox-label input[type="checkbox"] { 
+            margin-right: 12px; 
+            width: 20px; 
+            height: 20px; 
+            cursor: pointer; 
+            accent-color: #0ea5e9;
+        }
+        
+        .control-panel input[type="text"], .control-panel select { 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 14px 18px; 
+            font-size: 1.1em; 
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            border: 3px solid #cbd5e1; 
+            border-radius: 12px; 
+            outline: none; 
+            transition: border 0.2s; 
+            margin-bottom: 15px; 
+            display: block; 
+            background-color: #fff; 
+        }
+        input[type="text"]:focus, select:focus { border-color: #ec4899; }
+        
+        .btn-center-wrapper { text-align: center; margin-top: 15px; }
+        
+        button { 
+            padding: 16px 28px; 
+            border: none; 
+            background: #0ea5e9; 
+            color: white; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            font-size: 1.1em; 
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.2s; 
+            box-shadow: 0 6px 0px #0284c7; 
+        }
+        button:hover { background: #38bdf8; transform: translateY(2px); box-shadow: 0 4px 0px #0284c7; }
+        button:active { transform: translateY(6px); box-shadow: 0 0px 0px #0284c7; }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: 0 6px 0px #94a3b8; transform: none; }
+        
+        .btn-success { background: #10b981; box-shadow: 0 6px 0px #059669; }
+        .btn-success:hover { background: #34d399; box-shadow: 0 4px 0px #059669; }
+        .btn-success:active { transform: translateY(6px); box-shadow: 0 0px 0px #059669; }
+        
+        .btn-danger { background: #f43f5e; box-shadow: 0 6px 0px #e11d48; }
+        .btn-danger:hover { background: #fb7185; box-shadow: 0 4px 0px #e11d48; }
+        .btn-danger:active { transform: translateY(6px); box-shadow: 0 0px 0px #e11d48; }
+        
+        .instruction { font-size: 1.3em; font-weight: 800; color: #f59e0b; text-align: center; margin-top: 20px; }
+        
+        .problem-text { 
+            font-size: 1.4em; 
+            font-weight: 600;
+            text-align: center; 
+            margin: 20px 0; 
+            color: #1e293b; 
+            padding: 25px; 
+            background: #fdf4ff; 
+            border-radius: 16px; 
+            border: 3px solid #f0abfc; 
+        }
+        
+        .interaction-area { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 15px; 
+            margin-top: 25px; 
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .input-group input[type="number"] { 
+            flex: 2;
+            padding: 14px 15px; 
+            font-size: 1.2em; 
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            text-align: center; 
+            border: 3px solid #cbd5e1; 
+            border-radius: 12px; 
+            outline: none;
+        }
+        .input-group select {
+            flex: 1;
+            padding: 14px 10px; 
+            font-size: 1.1em; 
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            border: 3px solid #cbd5e1; 
+            border-radius: 12px; 
+            outline: none;
+            background-color: white;
+            cursor: pointer;
+        }
+        .input-group input[type="number"]:focus, .input-group select:focus { border-color: #10b981; }
+        
+        .interaction-area button { width: 100%; max-width: 450px; }
+        
+        .test-question { border-top: 4px dashed #e2e8f0; padding-top: 35px; margin-top: 35px; }
+        .test-question:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+        .test-question h3 { color: #8b5cf6; font-size: 1.6em; margin-bottom: 10px; }
+        
+        .solution-steps { 
+            background: #f0fdf4; 
+            padding: 25px; 
+            border-radius: 16px; 
+            margin-top: 25px; 
+            border: 3px solid #86efac; 
+        }
+        .solution-steps h4 { margin-top: 0; color: #15803d; font-size: 1.3em; border-bottom: 2px solid #bbf7d0; padding-bottom: 10px; }
+        
+        .gresa-row { margin-bottom: 12px; font-size: 1.25em; color: #334155; }
+        .gresa-label { font-weight: 800; display: inline-block; width: 110px; color: #0f172a; }
+        
+        .status-msg { font-size: 1.4em; font-weight: 800; margin-top: 15px; text-align: center; }
+        
+        #testResultsHeader { 
+            text-align: center; 
+            background: #fffbeb; 
+            padding: 30px; 
+            border-radius: 16px; 
+            margin-bottom: 30px; 
+            border: 3px solid #fde047; 
+        }
+        #testResultsHeader h2 { margin: 0 0 10px 0; color: #b45309; font-size: 2em; font-weight: 800; }
+        
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .container { padding: 20px; border-width: 3px; }
+            h1 { font-size: 2.2em; }
+            .checkbox-label { flex: 1 1 100%; }
+            .input-group { flex-direction: column; }
+            .input-group select { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>PhysMaster Pro</h1>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchMode('practice')">Practice Mode</div>
+        <div class="tab" onclick="switchMode('test')">Test Mode</div>
+    </div>
+    
+    <!-- Practice Mode -->
+    <div id="practice-section" class="section active">
+        <div class="control-panel">
+            <label class="main-label">Pick Physics Topics to Practice:</label>
+            <div class="checkbox-container" id="practiceTopics">
+                <label class="checkbox-label"><input type="checkbox" value="acc" checked> Acceleration (a = Δv/t)</label>
+                <label class="checkbox-label"><input type="checkbox" value="ke" checked> Kinetic Energy (KE)</label>
+                <label class="checkbox-label"><input type="checkbox" value="pe" checked> Potential Energy (PE)</label>
+                <label class="checkbox-label"><input type="checkbox" value="w" checked> Work (W = Fd)</label>
+                <label class="checkbox-label"><input type="checkbox" value="p" checked> Power (P = W/t)</label>
+            </div>
+            <div class="btn-center-wrapper">
+                <button onclick="generatePracticeQuestion()">Generate New Question!</button>
+            </div>
+        </div>
+        
+        <div id="practiceContent" style="display: none;">
+            <p class="instruction" id="practiceInstruction">Solve for the missing quantity. Don't forget the right unit!</p>
+            <div class="problem-text" id="practiceProblemText"></div>
+            
+            <div class="interaction-area">
+                <div class="input-group">
+                    <input type="number" id="practiceAns" placeholder="Enter number..." step="1">
+                    <select id="practiceUnit">
+                        <option value="">-- Unit --</option>
+                        <option value="J">J</option>
+                        <option value="kg">kg</option>
+                        <option value="m">m</option>
+                        <option value="s">s</option>
+                        <option value="m/s">m/s</option>
+                        <option value="m/s²">m/s²</option>
+                        <option value="N">N</option>
+                        <option value="W">W</option>
+                    </select>
+                </div>
+                <button class="btn-success" id="practiceCheckBtn" onclick="checkPracticeAnswer()">Check My Answer!</button>
+            </div>
+            <p id="practiceMsg" class="status-msg"></p>
+            
+            <div id="practiceSolution" class="solution-steps" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <!-- Test Mode -->
+    <div id="test-section" class="section">
+        <div id="testSetup" class="control-panel">
+            <label class="main-label">Student Name:</label>
+            <input type="text" id="studentName" placeholder="What's your full name?">
+            
+            <label class="main-label" style="margin-top: 25px;">Select Test Topics:</label>
+            <div class="checkbox-container" id="testTopics">
+                <label class="checkbox-label"><input type="checkbox" value="acc" checked> Acceleration (a = Δv/t)</label>
+                <label class="checkbox-label"><input type="checkbox" value="ke" checked> Kinetic Energy (KE)</label>
+                <label class="checkbox-label"><input type="checkbox" value="pe" checked> Potential Energy (PE)</label>
+                <label class="checkbox-label"><input type="checkbox" value="w" checked> Work (W = Fd)</label>
+                <label class="checkbox-label"><input type="checkbox" value="p" checked> Power (P = W/t)</label>
+            </div>
+
+            <label class="main-label" style="margin-top: 25px;">Length of Test (Multiplier):</label>
+            <select id="testMultiplier">
+                <option value="1">x1 (Standard - 1 of each)</option>
+                <option value="2">x2</option>
+                <option value="3">x3</option>
+                <option value="4">x4</option>
+                <option value="5">x5</option>
+            </select>
+            
+            <div class="btn-center-wrapper" style="margin-top: 25px;">
+                <button class="btn-success" onclick="startTest()">🚀 Start The Test!</button>
+            </div>
+            
+            <div id="quoteContainer" style="width: 100%; margin-top: 30px; padding-top: 20px; border-top: 3px dashed #cbd5e1; text-align: center;">
+                <p id="testQuote" style="font-size: 1.25em; font-style: italic; color: #8b5cf6; font-weight: 800; margin: 0 0 8px 0;"></p>
+                <p id="testSubtitle" style="font-size: 1em; color: #64748b; font-weight: 600; margin: 0;"></p>
+            </div>
+        </div>
+        
+        <div id="testContainer" style="display:none;"></div>
+    </div>
+</div>
+
+<script>
+    /* =======================================
+       MATHEMATICS CORE & PROBLEM GENERATORS
+       (All values strictly generate integers)
+       ======================================= */
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const g = 9.8;
+
+    function formatGresa(given, required, equation, solution, answer) {
+        return { Given: given, Required: required, Equation: equation, Solution: solution, Answer: answer };
+    }
+
+    // --- ACCELERATION (a = Δv / t) ---
+    function genAcc_a() {
+        let a = randInt(2, 20), t = randInt(2, 20);
+        let dv = a * t; 
+        return {
+            expected: a, unit: "m/s²",
+            text: `An object changes its velocity by ${dv} m/s in ${t} seconds. Calculate its acceleration.`,
+            gresa: formatGresa(
+                `\\Delta v = ${dv} \\text{ m/s}, \\quad t = ${t} \\text{ s}`, `a`,
+                `a = \\frac{\\Delta v}{t}`,
+                `a = \\frac{${dv}}{${t}}`,
+                `a = ${a} \\text{ m/s}^2`
+            )
+        };
+    }
+    function genAcc_dv() {
+        let a = randInt(2, 20), t = randInt(2, 20);
+        let dv = a * t;
+        return {
+            expected: dv, unit: "m/s",
+            text: `A car accelerates at ${a} m/s² for ${t} seconds. What is its change in velocity?`,
+            gresa: formatGresa(
+                `a = ${a} \\text{ m/s}^2, \\quad t = ${t} \\text{ s}`, `\\Delta v`,
+                `\\Delta v = a \\cdot t`,
+                `\\Delta v = (${a})(${t})`,
+                `\\Delta v = ${dv} \\text{ m/s}`
+            )
+        };
+    }
+    function genAcc_t() {
+        let a = randInt(2, 20), t = randInt(2, 20);
+        let dv = a * t;
+        return {
+            expected: t, unit: "s",
+            text: `A runner accelerates at ${a} m/s² to achieve a velocity change of ${dv} m/s. How long does this take?`,
+            gresa: formatGresa(
+                `a = ${a} \\text{ m/s}^2, \\quad \\Delta v = ${dv} \\text{ m/s}`, `t`,
+                `t = \\frac{\\Delta v}{a}`,
+                `t = \\frac{${dv}}{${a}}`,
+                `t = ${t} \\text{ s}`
+            )
+        };
+    }
+
+    // --- KINETIC ENERGY (KE = 1/2 m v²) ---
+    // Only solve for KE. Mass is made EVEN to ensure an integer KE.
+    function genKE_KE() {
+        let m = randInt(1, 20) * 2; // Always even
+        let v = randInt(2, 20);
+        let ke = Math.round(0.5 * m * Math.pow(v, 2)); 
+        return {
+            expected: ke, unit: "J",
+            text: `A ${m} kg object is moving at a velocity of ${v} m/s. What is its kinetic energy?`,
+            gresa: formatGresa(
+                `m = ${m} \\text{ kg}, \\quad v = ${v} \\text{ m/s}`, `KE`,
+                `KE = \\frac{1}{2}mv^2`,
+                `KE = 0.5(${m})(${v})^2`,
+                `KE = ${ke} \\text{ J}`
+            )
+        };
+    }
+
+    // --- POTENTIAL ENERGY (PE = mgh) ---
+    // Only solve for PE. Mass is a multiple of 5. g = 9.8. (5 * 9.8 = 49), guaranteeing an integer.
+    function genPE_PE() {
+        let m = randInt(1, 15) * 5; 
+        let h = randInt(2, 30);
+        let pe = Math.round(m * 9.8 * h);
+        return {
+            expected: pe, unit: "J",
+            text: `A ${m} kg box is lifted to a height of ${h} m. What is its potential energy? (Assume g = 9.8 m/s²)`,
+            gresa: formatGresa(
+                `m = ${m} \\text{ kg}, \\quad h = ${h} \\text{ m}, \\quad g = 9.8 \\text{ m/s}^2`, `PE`,
+                `PE = mgh`,
+                `PE = (${m})(9.8)(${h})`,
+                `PE = ${pe} \\text{ J}`
+            )
+        };
+    }
+
+    // --- WORK (W = Fd) ---
+    function genWork_W() {
+        let F = randInt(5, 50), d = randInt(2, 30);
+        let W = F * d;
+        return {
+            expected: W, unit: "J",
+            text: `A force of ${F} N is applied to move an object by ${d} m. How much work is done?`,
+            gresa: formatGresa(
+                `F = ${F} \\text{ N}, \\quad d = ${d} \\text{ m}`, `W`,
+                `W = Fd`,
+                `W = (${F})(${d})`,
+                `W = ${W} \\text{ J}`
+            )
+        };
+    }
+    function genWork_F() {
+        let F = randInt(5, 50), d = randInt(2, 30);
+        let W = F * d;
+        return {
+            expected: F, unit: "N",
+            text: `${W} Joules of work is required to move a box ${d} m. What is the applied force?`,
+            gresa: formatGresa(
+                `W = ${W} \\text{ J}, \\quad d = ${d} \\text{ m}`, `F`,
+                `F = \\frac{W}{d}`,
+                `F = \\frac{${W}}{${d}}`,
+                `F = ${F} \\text{ N}`
+            )
+        };
+    }
+    function genWork_d() {
+        let F = randInt(5, 50), d = randInt(2, 30);
+        let W = F * d;
+        return {
+            expected: d, unit: "m",
+            text: `A force of ${F} N does ${W} J of work on an object. What is the distance moved?`,
+            gresa: formatGresa(
+                `W = ${W} \\text{ J}, \\quad F = ${F} \\text{ N}`, `d`,
+                `d = \\frac{W}{F}`,
+                `d = \\frac{${W}}{${F}}`,
+                `d = ${d} \\text{ m}`
+            )
+        };
+    }
+
+    // --- POWER (P = W/t) ---
+    function genPower_P() {
+        let P = randInt(5, 50), t = randInt(2, 30);
+        let W = P * t;
+        return {
+            expected: P, unit: "W",
+            text: `A machine does ${W} J of work in ${t} seconds. What is its power output?`,
+            gresa: formatGresa(
+                `W = ${W} \\text{ J}, \\quad t = ${t} \\text{ s}`, `P`,
+                `P = \\frac{W}{t}`,
+                `P = \\frac{${W}}{${t}}`,
+                `P = ${P} \\text{ W}`
+            )
+        };
+    }
+    function genPower_W() {
+        let P = randInt(5, 50), t = randInt(2, 30);
+        let W = P * t;
+        return {
+            expected: W, unit: "J",
+            text: `A ${P} W motor runs for ${t} seconds. How much work does it accomplish?`,
+            gresa: formatGresa(
+                `P = ${P} \\text{ W}, \\quad t = ${t} \\text{ s}`, `W`,
+                `W = P \\cdot t`,
+                `W = (${P})(${t})`,
+                `W = ${W} \\text{ J}`
+            )
+        };
+    }
+    function genPower_t() {
+        let P = randInt(5, 50), t = randInt(2, 30);
+        let W = P * t;
+        return {
+            expected: t, unit: "s",
+            text: `A ${P} W machine is required to do ${W} J of work. How long will this take?`,
+            gresa: formatGresa(
+                `P = ${P} \\text{ W}, \\quad W = ${W} \\text{ J}`, `t`,
+                `t = \\frac{W}{P}`,
+                `t = \\frac{${W}}{${P}}`,
+                `t = ${t} \\text{ s}`
+            )
+        };
+    }
+
+    const physicsGenerators = {
+        'acc':[genAcc_a, genAcc_dv, genAcc_t],
+        'ke': [genKE_KE],
+        'pe':[genPE_PE],
+        'w':[genWork_W, genWork_F, genWork_d],
+        'p': [genPower_P, genPower_W, genPower_t]
+    };
+
+    /* =======================================
+       APP LOGIC & STATE
+       ======================================= */
+    let currentMode = 'practice';
+    let currentPracticeProb = null, practiceTries = 0;
+    let testProbs =[], testStartTime = null, testEndTime = null, testScore = 0;
+
+    const integrityQuotes =[
+        { q: "“Science is a way of thinking much more than it is a body of knowledge.”", s: "Understanding the process is more important than memorizing the answer." },
+        { q: "“Your grade is temporary. Your integrity is permanent.”", s: "A score lasts a school year. Character lasts a lifetime." },
+        { q: "“Cheating may raise your score, but it lowers your standards.”", s: "Success without honesty isn’t success." },
+        { q: "“A mistake is not a detour from the path of learning; it is the path itself.”", s: "Perfection creates a standstill. Error creates momentum and discovery." },
+        { q: "“Do not fear the wrong answer; fear only the unattempted problem.”", s: "A flawed attempt always teaches a lesson. An empty page offers absolutely nothing." }
+    ];
+
+    function displayRandomQuote() {
+        let qObj = integrityQuotes[Math.floor(Math.random() * integrityQuotes.length)];
+        document.getElementById('testQuote').innerText = qObj.q;
+        document.getElementById('testSubtitle').innerText = qObj.s;
+    }
+
+    function renderMath() {
+        document.querySelectorAll('.math').forEach(el => katex.render(el.getAttribute('data-tex'), el, {throwOnError: false}));
+    }
+
+    function switchMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab')[mode === 'practice' ? 0 : 1].classList.add('active');
+        document.getElementById(mode + '-section').classList.add('active');
+    }
+
+    function buildGresaHTML(gresaObj) {
+        return `
+            <div class="gresa-row"><span class="gresa-label">Given:</span> <span class="math" data-tex="${gresaObj.Given}"></span></div>
+            <div class="gresa-row"><span class="gresa-label">Required:</span> <span class="math" data-tex="${gresaObj.Required}"></span></div>
+            <div class="gresa-row"><span class="gresa-label">Equation:</span> <span class="math" data-tex="${gresaObj.Equation}"></span></div>
+            <div class="gresa-row"><span class="gresa-label">Solution:</span> <span class="math" data-tex="${gresaObj.Solution}"></span></div>
+            <div class="gresa-row"><span class="gresa-label">Answer:</span> <span class="math" data-tex="${gresaObj.Answer}"></span></div>
+        `;
+    }
+
+    // --- PRACTICE MODE ---
+    function generatePracticeQuestion() {
+        let checkboxes = document.querySelectorAll('#practiceTopics input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) return alert("Please select at least one physics topic.");
+        
+        let pool =[];
+        checkboxes.forEach(cb => {
+            pool.push(...physicsGenerators[cb.value]);
+        });
+        
+        currentPracticeProb = pool[Math.floor(Math.random() * pool.length)]();
+        practiceTries = 0;
+        
+        document.getElementById('practiceContent').style.display = 'block';
+        document.getElementById('practiceProblemText').innerText = currentPracticeProb.text;
+        document.getElementById('practiceAns').value = '';
+        document.getElementById('practiceUnit').value = '';
+        document.getElementById('practiceAns').disabled = false;
+        document.getElementById('practiceUnit').disabled = false;
+        document.getElementById('practiceCheckBtn').disabled = false;
+        document.getElementById('practiceMsg').innerHTML = '';
+        document.getElementById('practiceSolution').style.display = 'none';
+    }
+
+    function checkPracticeAnswer() {
+        let val = document.getElementById('practiceAns').value.trim();
+        let unit = document.getElementById('practiceUnit').value;
+        
+        if (val === '' || unit === '') {
+            document.getElementById('practiceMsg').innerHTML = '<span style="color:#f59e0b;">Please enter both a number and select a unit!</span>';
+            return;
+        }
+        
+        let studentAnswer = parseInt(val, 10);
+        
+        // Exact integer and exact unit comparison
+        let isValueCorrect = studentAnswer === currentPracticeProb.expected;
+        let isUnitCorrect = unit === currentPracticeProb.unit;
+        let isCorrect = isValueCorrect && isUnitCorrect;
+        
+        if (isCorrect) {
+            document.getElementById('practiceMsg').innerHTML = '<span style="color:#10b981;">Correct! 🎉 Great job!</span>';
+            showPracticeSolution();
+        } else {
+            practiceTries++;
+            if (practiceTries === 1) {
+                if (!isValueCorrect && !isUnitCorrect) {
+                    document.getElementById('practiceMsg').innerHTML = '<span style="color:#ef4444;">Incorrect number and unit. Try again!</span>';
+                } else if (!isValueCorrect) {
+                    document.getElementById('practiceMsg').innerHTML = '<span style="color:#ef4444;">Right unit, but wrong number. Try again!</span>';
+                } else {
+                    document.getElementById('practiceMsg').innerHTML = '<span style="color:#ef4444;">Right number, but wrong unit. Try again!</span>';
+                }
+            } else {
+                document.getElementById('practiceMsg').innerHTML = '<span style="color:#ef4444;">Incorrect. Here is the exact GRESA solution.</span>';
+                showPracticeSolution();
+            }
+        }
+    }
+
+    function showPracticeSolution() {
+        document.getElementById('practiceAns').disabled = true;
+        document.getElementById('practiceUnit').disabled = true;
+        document.getElementById('practiceCheckBtn').disabled = true;
+        let sol = document.getElementById('practiceSolution');
+        sol.style.display = 'block';
+        sol.innerHTML = `<h4>GRESA Method Solution</h4>` + buildGresaHTML(currentPracticeProb.gresa);
+        renderMath();
+    }
+
+    // --- TEST MODE ---
+    function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+    function resetTest() {
+        if (testEndTime === null && testProbs.length > 0) {
+            if (!confirm("Are you sure you want to abandon the current test?")) return;
+        }
+        document.getElementById('testSetup').style.display = '';
+        document.getElementById('testContainer').style.display = 'none';
+        document.getElementById('testContainer').innerHTML = ''; 
+        testProbs =[];
+        testStartTime = null;
+        testEndTime = null;
+        testScore = 0;
+        displayRandomQuote(); 
+    }
+
+    function startTest() {
+        let name = document.getElementById('studentName').value.trim();
+        if (!name) return alert("Please enter your name before starting the test.");
+        
+        let checkboxes = document.querySelectorAll('#testTopics input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) return alert("Please select at least one test topic.");
+        
+        let multiplier = parseInt(document.getElementById('testMultiplier').value, 10);
+        
+        testProbs =[];
+        
+        // Generate `multiplier` amount of questions per missing quantity of the selected equations
+        checkboxes.forEach(cb => {
+            physicsGenerators[cb.value].forEach(genFunc => {
+                for (let i = 0; i < multiplier; i++) {
+                    testProbs.push(genFunc());
+                }
+            });
+        });
+        
+        shuffle(testProbs);
+        testStartTime = new Date();
+        
+        let html = `
+        <div id="testProgressHeader" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px;">
+            <h2 style="margin:0; color:#334155; font-weight:800;">Test in Progress ⏱️</h2>
+            <button class="btn-danger" onclick="resetTest()" style="width:auto; padding: 12px 20px; margin: 0;">Stop Test</button>
+        </div>`;
+        
+        testProbs.forEach((p, i) => {
+            html += `<div class="test-question" id="test-q-${i}">
+                <h3>Question ${i+1}</h3>
+                <div class="problem-text">${p.text}</div>
+                <div class="input-group" style="margin: 0 auto;">
+                    <input type="number" id="test-ans-${i}" placeholder="Value..." step="1">
+                    <select id="test-unit-${i}">
+                        <option value="">-- Unit --</option>
+                        <option value="J">J</option>
+                        <option value="kg">kg</option>
+                        <option value="m">m</option>
+                        <option value="s">s</option>
+                        <option value="m/s">m/s</option>
+                        <option value="m/s²">m/s²</option>
+                        <option value="N">N</option>
+                        <option value="W">W</option>
+                    </select>
+                </div>
+                <div id="test-res-${i}" class="solution-steps" style="display:none;"></div>
+            </div>`;
+        });
+        html += `<div style="text-align:center; margin-top:40px;"><button class="btn-success" id="submitTestBtn" onclick="submitTest()" style="width:100%; max-width:300px;">Submit Final Test</button></div>`;
+        
+        document.getElementById('testContainer').innerHTML = html;
+        document.getElementById('testSetup').style.display = 'none';
+        document.getElementById('testContainer').style.display = 'block';
+    }
+
+    function submitTest() {
+        if (!confirm("Are you ready to submit your test?")) return;
+        testEndTime = new Date();
+        testScore = 0;
+        
+        testProbs.forEach((p, i) => {
+            let userStr = document.getElementById(`test-ans-${i}`).value.trim();
+            let userUnit = document.getElementById(`test-unit-${i}`).value;
+            let userAns = parseInt(userStr, 10);
+            
+            let isCorrect = (!isNaN(userAns)) && (userAns === p.expected) && (userUnit === p.unit);
+            if (isCorrect) testScore++;
+            
+            document.getElementById(`test-ans-${i}`).disabled = true;
+            document.getElementById(`test-unit-${i}`).disabled = true;
+            
+            let res = document.getElementById(`test-res-${i}`);
+            res.style.display = 'block';
+            res.style.borderLeftColor = isCorrect ? '#4ade80' : '#fb7185';
+            res.style.backgroundColor = isCorrect ? '#f0fdf4' : '#fff1f2';
+            
+            let displayUserAns = userStr === '' ? '(No answer)' : userStr;
+            let displayUserUnit = userUnit === '' ? '(No unit)' : userUnit;
+
+            res.innerHTML = `
+                <p style="font-size: 1.1em; margin-bottom: 5px;"><strong>Your Answer:</strong> ${displayUserAns} ${displayUserUnit}</p>
+                <p style="font-size: 1.1em; margin-bottom: 5px;"><strong>Status:</strong> <span style="color:${isCorrect ? '#16a34a' : '#e11d48'}; font-weight:800; font-size: 1.2em;">${isCorrect ? 'Correct! ✅' : 'Wrong ❌'}</span></p>
+                <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>Expected Answer:</strong> ${p.expected} ${p.unit}</p>
+                <h4 style="color: ${isCorrect ? '#15803d' : '#be123c'}; border-bottom-color: ${isCorrect ? '#bbf7d0' : '#fecdd3'};">GRESA Method Solution</h4>
+                ${buildGresaHTML(p.gresa)}
+            `;
+        });
+        
+        document.getElementById('submitTestBtn').style.display = 'none';
+        
+        let progressHeader = document.getElementById('testProgressHeader');
+        if (progressHeader) progressHeader.style.display = 'none';
+        
+        let header = document.createElement('div');
+        header.id = 'testResultsHeader';
+        header.innerHTML = `
+            <h2>Test Completed! 🎉</h2>
+            <h3 style="color:#0ea5e9; font-size: 1.6em; font-weight: 800;">Final Score: ${testScore} / ${testProbs.length}</h3>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
+                <button onclick="viewCertificate()" style="background:#8b5cf6; box-shadow: 0 6px 0px #7c3aed; width:100%; max-width:220px;">📜 View Certificate</button>
+                <button class="btn-success" onclick="resetTest()" style="width:100%; max-width:220px;">🔄 Start New Test</button>
+            </div>
+        `;
+        document.getElementById('testContainer').prepend(header);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        renderMath();
+    }
+
+    function viewCertificate() {
+        let name = document.getElementById('studentName').value.trim();
+        
+        let canvas = document.createElement('canvas');
+        canvas.width = 800; canvas.height = 600;
+        let ctx = canvas.getContext('2d');
+        
+        // Background
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillRect(15, 15, canvas.width - 30, canvas.height - 30);
+        
+        ctx.strokeStyle = "#0ea5e9";
+        ctx.lineWidth = 10;
+        ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+        
+        ctx.strokeStyle = "#f0abfc";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+        
+        // Text Configuration
+        ctx.fillStyle = "#334155";
+        ctx.textAlign = "center";
+        
+        ctx.font = "bold 45px Nunito, Arial";
+        ctx.fillText("Certificate of Excellence", canvas.width/2, 130);
+        
+        ctx.font = "italic 24px Nunito, Arial";
+        ctx.fillStyle = "#64748b";
+        ctx.fillText("This is proudly awarded to", canvas.width/2, 220);
+        
+        ctx.font = "bold 42px Nunito, Arial";
+        ctx.fillStyle = "#ec4899";
+        ctx.fillText(name, canvas.width/2, 290);
+        
+        ctx.fillStyle = "#334155";
+        ctx.font = "22px Nunito, Arial";
+        ctx.fillText(`For successfully completing the Grade 8 Physics Test`, canvas.width/2, 360);
+        
+        ctx.font = "bold 32px Nunito, Arial";
+        ctx.fillStyle = "#10b981";
+        ctx.fillText(`Final Score: ${testScore} / ${testProbs.length}`, canvas.width/2, 430);
+        
+        // Draw Dates Left-Aligned
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "bold 16px Nunito, Arial";
+        ctx.fillText(`Started: ${testStartTime.toLocaleString()}`, 80, 510);
+        ctx.fillText(`Finished: ${testEndTime.toLocaleString()}`, 80, 540);
+        
+        const downloadCanvas = () => {
+            try {
+                let link = document.createElement('a');
+                link.download = `Physics_Certificate_${name.replace(/\s+/g, '_')}.jpg`;
+                link.href = canvas.toDataURL("image/jpeg");
+                link.click();
+            } catch (err) {
+                alert("Security Error: Cannot download certificate image directly when opening HTML locally. Please run this app via a Local Web Server to download the certificate successfully.");
+            }
+        };
+
+        let sigImg = new Image();
+        sigImg.onload = () => {
+            let imgWidth = 200; 
+            let imgHeight = (sigImg.height / sigImg.width) * imgWidth;
+            let imgX = canvas.width - 80 - imgWidth; 
+            let imgY = 525 - (imgHeight / 2);
+            ctx.drawImage(sigImg, imgX, imgY, imgWidth, imgHeight);
+            downloadCanvas();
+        };
+        
+        sigImg.onerror = () => {
+            // Failsafe if 'signature.png' is missing
+            downloadCanvas();
+        };
+        
+        sigImg.src = 'signature.png';
+    }
+
+    displayRandomQuote();
+</script>
+
+</body>
+</html>
